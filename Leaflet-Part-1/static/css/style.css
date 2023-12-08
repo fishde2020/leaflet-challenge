@@ -10,22 +10,18 @@ html {
 }
 
 .legend {
-  background-color: white;
-  line-height: 20px;
-  color: black;
-  width: auto;
-  padding: 5px 5px 5px 5px;
+  padding: 10px;
+  width: 90px;
+  height: 115px;
+  line-height: 18px;
+  color: #555;
+  background-color: aliceblue;
 }
-
 .legend i {
-  width: 30px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   float: left;
-  margin-right: 5px;
-  opacity: 0.9;
-}
-
-h4 {
-  margin: 0px;
-  padding: 0px;
+  margin-right: 20px;
+  opacity: 1;
+  
 }
