@@ -122,3 +122,6 @@ layersControl.addBaseLayer(topo, "Topo Map");
 
 // Add the layer control to the map
 layersControl.addTo(myMap);
+
+// Add the layer control to the map
+layersControl.addTo(myMap);
