@@ -1,80 +1,95 @@
-// Initialize the map
-var myMap = L.map("map", {
-  center: [37.09, -95.71], // Adjust the center as needed
-  zoom: 5
+// Creating the map object
+let myMap = L.map("map", {
+  center: [10.5937, 50.9629],
+  zoom: 4.5
 });
 
-// Add Mapbox tile layer
-L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaHhwcmluY2l2aWwiLCJhIjoiY2xwcGxkNW1xMDF0eDJpbXo3YTBnbWp0cyJ9.eQkMdFert-in9BCcnzK_xw', {
-  maxZoom: 18,
-  id: 'mapbox/streets-v11', // Choose the style that fits your map
-  tileSize: 512,
-  zoomOffset: -1
+// Adding the tile layer
+let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(myMap);
+let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+	attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+});
 
-// URL for the USGS Earthquake GeoJSON data
-var queryUrl = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
-// Function to determine marker size based on earthquake magnitude
-function markerSize(magnitude) {
-  return magnitude * 3;
+
+// Load the GeoJSON data.
+let geoData = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+function getColor(d) {
+  if (d < 10) return '#FEB24C';
+  else if (d <30) return '#FD8D3C';
+  else if (d <50) return '#FC4E2A';
+  else if (d <70) return "#E31A1C";
+  else if (d <90) return '#BD0026';
+  else return '#7a0177';
 }
+// function getColor(d) {
+//   return d > 90 ? '#7a0177' :
+//   d > 70? '#BD0026' :
+//   d > 50? '#E31A1C' :
+//   d > 30? '#FC4E2A' :
+//   d > 10 ? '#FD8D3C' :
+//   d > -10 ? '#FEB24C' :
+//   '#FFEDA0';
+//   }
+// Get the data with d3.
+d3.json(geoData).then(function(data) {
 
-// Function to determine marker color based on earthquake depth
-function markerColor(depth) {
-  if (depth > 90) return '#ff0000'; // Red
-  else if (depth > 70) return '#ff4500'; // OrangeRed
-  else if (depth > 50) return '#ff8c00'; // DarkOrange
-  else if (depth > 30) return '#ffd700'; // Yellow
-  else if (depth > 10) return '#9acd32'; // YellowGreen
-  else return '#00ff00'; // Green
-}
-
-// Fetch the data
-d3.json(queryUrl).then(function(data) {
-  // Create a GeoJSON layer
-  L.geoJSON(data, {
+  // Create a new choropleth layer.
+  var earthquakes = L.geoJson(data, {
     pointToLayer: function(feature, latlng) {
-      var geojsonMarkerOptions = {
-        radius: markerSize(feature.properties.mag),
-        fillColor: markerColor(feature.geometry.coordinates[2]),
-        color: "#000",
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.8
-      };
-      return L.circleMarker(latlng, geojsonMarkerOptions);
-    },
-    onEachFeature: function(feature, layer) {
-      layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place + "<br>Depth: " + feature.geometry.coordinates[2] + " km");
-    }
-  }).addTo(myMap);
+        var markerCh = L.circleMarker(latlng, {
+            radius: feature.properties.mag * 5,
+            fillColor: getColor(feature.geometry.coordinates[2]),
+            color: "#000",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
+        })
+        markerCh.bindPopup("<h3>" + feature.properties.title+"</h3><hr><p>" + `Depth: ${feature.geometry.coordinates[2]}` + "</p>"); // Or whatever
+        return markerCh;
+      }
 
-  // Add legend with background and color palette
-  var legend = L.control({ position: "bottomright" });
+});
 
-  legend.onAdd = function(map) {
-    var div = L.DomUtil.create('div', 'info legend'),
-        grades = [-10, 10, 30, 50, 70, 90],
-        labels = [];
+// let tetonic_link = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
+// d3.json(tetonic_link).then(function(data) {
+//   // Creating a GeoJSON layer with the retrieved data
+//   let tetonics = L.geoJson(data)
+    // Passing in our style object
 
-    // Add a white background to the legend
-    div.style.backgroundColor = '#fff';
-    div.style.padding = '10px';
-    div.style.margin = '5px';
-    div.style.borderRadius = '5px';
-    div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)';
+let baseMaps = {
+  Street: street,
+  Topography: topo
+};
 
-    // Loop through depth intervals and generate label with colored square for each interval
-    for (var i = 0; i < grades.length; i++) {
-      div.innerHTML +=
-        '<i style="background:' + markerColor(grades[i] + 1) + '; width: 18px; height: 18px; display: inline-block; margin-right: 5px;"></i> ' +
-        grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] : '+');
-      div.innerHTML += '<br>';
-    }
+let overlayMaps = {
+  Earthquakes: earthquakes,
+};
 
-    return div;
-  };
+L.control.layers(baseMaps, overlayMaps,{collapsed: false}).addTo(myMap);
 
+//  Create a legend to display information about our map
+// source -- https://www.igismap.com/legend-in-leafletjs-map-with-topojson/
+ var legend = L.control({
+  position: "bottomright"
+});
+// When the layer control is added, insert a div with the class of "legend"
+legend.onAdd = function() {
+  var div = L.DomUtil.create("div", "info legend"),
+  depth = [-10, 10, 30, 50, 70, 90];
+
+  div.innerHTML += "<h3 style='text-align: center'>Depth</h3>"
+
+  for (var i = 0; i < depth.length; i++) {
+    div.innerHTML +=
+    '<i style="background:' + getColor(depth[i] + 1) + '"></i> ' + depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
+  }
+  return div;
+};
+legend.addTo(myMap);
+
+});
   legend.addTo(myMap);
 });
