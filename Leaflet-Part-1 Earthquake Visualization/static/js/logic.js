@@ -3,17 +3,14 @@
 let myMap = L.map("map", { center: [37.09, -95.71],
     zoom: 5
   });
-
   //  Tile layer from OpenStreetMap
   let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(myMap);
-
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'})
+      .addTo(myMap);
 // topo map from OpenTopoMap 
   let topo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
   });
-  
   // Load the GeoJSON data.
 let geoData = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
@@ -25,12 +22,10 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
     "Street Map": street,
     "Topographic Map": topo
   };
-
   let overlays = {
     Earthquakes: earthquakeGroup,
     Tectonic: tectonicGroup
   };
-  
   // Get the data with d3.
   d3.json(geoData).then(function(data) {
   
@@ -43,7 +38,6 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
         
             "#B6F34C";
   }
-
   function style(feature) {
     return {
       "stroke": true,
@@ -55,13 +49,10 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
       fillOpacity: 0.8
     };
 }
-
-
   L.geoJson(data, {
     pointToLayer: function (feature, latlng) {
       return L.circleMarker(latlng, style(feature));
     },
-    
         // Binding a popup to each layer
         onEachFeature: function(feature, layer) {
           layer.bindPopup("<strong>" + feature.properties.place + "</strong><br /><br />Magnitude: " +
