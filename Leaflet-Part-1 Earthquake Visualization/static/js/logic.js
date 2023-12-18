@@ -1,6 +1,6 @@
 
 // map object
-let myMap = L.map("map", { center: [27.96044, -82.30695],
+let myMap = L.map("map", { center: [25.56777, -82.30695],
     zoom: 4
   });
 
