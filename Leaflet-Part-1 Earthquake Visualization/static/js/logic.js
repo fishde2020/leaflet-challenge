@@ -1,7 +1,7 @@
 
 // map object
 let myMap = L.map("map", { center: [37.09, -95.71],
-    zoom: 3
+    zoom: 2
   });
 
   //  Tile layer from OpenStreetMap
