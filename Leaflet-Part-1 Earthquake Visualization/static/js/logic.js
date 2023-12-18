@@ -24,7 +24,7 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
     Earthquakes: earthquakeGroup,
     Tectonic: tectonicGroup
   };
-  // Get the data with d3.
+  // Data with d3.
   d3.json(geoData).then(function(data) {
   
   function getValue(x) {
@@ -66,7 +66,7 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
           //labels = ["<10", "10-30", "30-50", "50-70", "70-90", "90+"];
           let grades = [-10, 10, 30, 50, 70, 90];
           let colors = ["#98ee00","#d4ee00","#eecc00","#ee9c00","#ea822c","#ea2c2c"];
-      // loop through our density intervals and generate a label with a colored square for each interval
+      // loop through our density intervals 
       for (let i = 0; i < grades.length; i++) {
           div.innerHTML +=
               '<i style="background:' + colors[i] + '">&emsp;&emsp;</i> '
