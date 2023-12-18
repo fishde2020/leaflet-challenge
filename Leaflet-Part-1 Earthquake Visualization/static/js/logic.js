@@ -1,7 +1,5 @@
-
 // map object
-let myMap = L.map("map", { center: [37.09, -95.71],
-    zoom: 5
+let myMap = L.map("map", { center: [37.09, -95.71], zoom: 5
   });
   //  Tile layer from OpenStreetMap
   let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -61,10 +59,7 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
       }).addTo(earthquakeGroup);
 
       earthquakeGroup.addTo(myMap);
-
-      
       let legend = L.control({ position: "bottomright" });
-
       legend.onAdd = function() {
 
           let div = L.DomUtil.create("div", "info legend");
@@ -78,13 +73,10 @@ const TECTONIC_URL = "https://raw.githubusercontent.com/fraxen/tectonicplates/ma
               + grades[i]
               + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
       }
-
       return div;
       };
 
       legend.addTo(myMap);
-
-
 });
   
 // Get the data with d3.
@@ -101,15 +93,11 @@ d3.json(TECTONIC_URL).then(function(plate_data) {
   tectonicPlates.addTo(tectonicGroup);
   tectonicGroup.addTo(myMap);
 });
-
-
 var layersControl = L.control.layers(null, null, { collapsed: false });
-
 // Add overlay layers to layer control
 layersControl.addOverlay(earthquakeGroup, "Earthquakes");
 layersControl.addOverlay(tectonicGroup, "Tectonic Plates");
 layersControl.addBaseLayer(street, "Map");
 layersControl.addBaseLayer(topo, "Topo Map");
-
-// Add the layer control to the map
+// Add the layer 
 layersControl.addTo(myMap);
